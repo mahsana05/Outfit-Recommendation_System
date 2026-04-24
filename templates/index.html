@@ -1,0 +1,40 @@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+{% extends "base.html" %}
+{% block title %}Home – VestileFit{% endblock %}
+{% block content %}
+<div class="card">
+ <h1>👗 VestiLeFit</h1>
+<p style="text-align:center;font-style:italic;color:#555;margin-top:10px;">
+“Style is a way to say who you are without speaking.”
+</p>
+{% if session.get('body_type') %}
+<div class="alert">
+  Body Type:
+  <strong>{{ session.get('body_type') }}</strong>
+</div>
+{% endif %}
+
+{% if session.get('detected_size') %}
+<div class="alert">
+  Size:
+  <strong>{{ session.get('detected_size') }}</strong>
+</div>
+{% endif %}
+
+<div class="menu">
+
+<a href="/fit-analyzer" class="menu-card">
+✨
+<p>Fit Analyzer</p>
+</a>
+
+
+<a href="/dress-recommendation" class="menu-card">
+✨
+<p>Dress Recommendation</p>
+</a>
+
+</div>
+</div>
+{% endblock %}
