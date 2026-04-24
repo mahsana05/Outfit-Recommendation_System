@@ -1,1 +1,131 @@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+{% extends "base.html" %}
+{% block title %}Recommendations{% endblock %}
+{% block content %}
+<html>
+<style>
+button:hover{
+background:#e11d48;
+}
+
+.confidence-bar{
+width:100%;
+height:10px;
+background:#eee;
+border-radius:10px;
+margin-top:5px;
+}
+
+.confidence-fill{
+height:10px;
+background:#e11d48;
+border-radius:10px;
+min-width:5px;
+width: 0%;
+}
+
+.confidence-fill[data-width] {
+width: attr(data-width);
+}
+
+.dress-card{
+display:none;
+max-width:320px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,.1);
+animation:fadeUp .5s ease;
+}
+
+.dress-card.active {
+display: block;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(15px);}
+to{opacity:1;transform:translateY(0);}
+}
+</style>
+<script>
+let current = 0;
+
+function showNext() {
+    const items = document.querySelectorAll(".dress-card");
+
+    items[current].classList.remove("active");
+
+    current = (current + 1) % items.length;
+
+    items[current].classList.add("active");
+}
+</script>
+
+</head>
+
+<body>
+
+<div style="color:#555;padding:15px; border-radius:8px; margin-bottom:20px;font-family:'Poppins', sans-serif;">
+{% if session.get('body_type') %}
+<h3>
+your recommended size is {{ session.get('detected_size') }}
+</h3>
+</div>
+{% endif %}
+<h2>Your Outfit Recommendations</h2>
+
+{% if dresses and dresses |length>0 %}
+
+{% for dress in dresses %}
+
+<div class="dress-card{% if loop.index0 == 0 %} active{% endif %}">
+
+<h3>{{ dress.name }}</h3>
+<img src="{{ url_for('static', filename=dress.image_path) }}" style="height:260px; width:200px; object-fit:cover;border-radius: 10px;">
+
+<p>{{ dress.description }}</p>
+{% if explanation %}
+<p style="background:#fff3cd;padding:10px;border-radius:8px;">
+💡 {{ explanation }}
+</p>
+{% endif %}
+
+
+<br>
+
+{% set search_query = dress.name + ' ' + dress.color+' '+dress.category+' '+session.get('detected_size', '')+ ' ' + dress.gender %}
+
+{% if dress.amazon_url %}
+  <a href="{{ dress.amazon_url }}" target="_blank">
+  <button>Amazon</button>
+  </a>
+{% else %}
+  <a href="https://www.amazon.in/s?k={{ search_query.replace(' ','+') }}+fashion&rh=n%3A1571271031" target="_blank">
+  <button>Amazon</button>
+  </a>
+{% endif %}
+
+{% if dress.flipkart_url %}
+  <a href="{{ dress.flipkart_url }}" target="_blank">
+  <button>Flipkart</button>
+  </a>
+{% else %}
+  <a href="https://www.flipkart.com/search?q={{ search_query.replace(' ','+') }}+clothing" target="_blank">
+  <button>Flipkart</button>
+  </a>
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+<br>
+<button onclick="showNext()">Next Outfit</button>
+{% else %}
+<div class="alert">No results matched your criteria.</div>
+{% endif %}
+
+<p><a class="link-button" href="{{ url_for('home') }}">Back to Home</a></p>
+{% endblock %}
